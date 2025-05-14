@@ -1,32 +1,31 @@
-# %% [markdown]
-# # Postpartum Depression Prediction Project
+# Postpartum Depression Prediction Project
 
-# %% [markdown]
-# ### INTRODUCTION –---
-# 
-# 152120221051 Elif Suna GEGİN
-# 152120211072 Resul EVLEKSİZ
-# 152120221094 Kadriye HARMANCI
-# 
-# #### Project Objective  
-# Our project aims to build machine learning models to **predict the risk of postpartum depression (PPD)** using self-reported postnatal data. We use the variable **“Feeling anxious”** as a proxy for identifying individuals likely to experience postpartum depression, as anxiety is a common and early symptom of PPD.
-# 
-# #### Why It Matters?
-# Postpartum depression can significantly affect the well-being of both the parent and the child. Early detection using data-driven methods can enable healthcare professionals to intervene more effectively and support mental health recovery.
-# 
-# #### Scope of the Project  
-# - Predict the presence of postpartum anxiety using the **“Feeling anxious”** variable.  
-# - Analyze emotional, behavioral, and psychological factors collected from individuals in the postnatal period.  
-# - Apply and compare classification models such as Logistic Regression, Random Forest, LightGBM, CatBoost, and Stacking.  
-# - Address class imbalance through oversampling techniques like **SMOTE**.  
-# - Evaluate model performance using metrics including F1 Score, ROC-AUC, and Precision-Recall curves.
-# 
-# #### Dataset Information  
-# The dataset used in this project was sourced from **Kaggle**. It consists of self-reported responses from individuals in the postpartum period and includes approximately **1503 rows** and **11 columns**.  
-# The features capture a wide range of emotional and behavioral indicators such as appetite changes, sleep disturbances, guilt, bonding with the baby, and anxiety symptoms, making it suitable for mental health risk prediction.
-# 
+### INTRODUCTION –---
 
-# %%
+152120221051 Elif Suna GEGİN
+152120211072 Resul EVLEKSİZ
+152120221094 Kadriye HARMANCI
+
+#### Project Objective  
+Our project aims to build machine learning models to **predict the risk of postpartum depression (PPD)** using self-reported postnatal data. We use the variable **“Feeling anxious”** as a proxy for identifying individuals likely to experience postpartum depression, as anxiety is a common and early symptom of PPD.
+
+#### Why It Matters?
+Postpartum depression can significantly affect the well-being of both the parent and the child. Early detection using data-driven methods can enable healthcare professionals to intervene more effectively and support mental health recovery.
+
+#### Scope of the Project  
+- Predict the presence of postpartum anxiety using the **“Feeling anxious”** variable.  
+- Analyze emotional, behavioral, and psychological factors collected from individuals in the postnatal period.  
+- Apply and compare classification models such as Logistic Regression, Random Forest, LightGBM, CatBoost, and Stacking.  
+- Address class imbalance through oversampling techniques like **SMOTE**.  
+- Evaluate model performance using metrics including F1 Score, ROC-AUC, and Precision-Recall curves.
+
+#### Dataset Information  
+The dataset used in this project was sourced from **Kaggle**. It consists of self-reported responses from individuals in the postpartum period and includes approximately **1503 rows** and **11 columns**.  
+The features capture a wide range of emotional and behavioral indicators such as appetite changes, sleep disturbances, guilt, bonding with the baby, and anxiety symptoms, making it suitable for mental health risk prediction.
+
+
+
+```python
 # CELL 1: Importing Libraries
 import pandas as pd
 import numpy as np
@@ -44,31 +43,37 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 from lightgbm import LGBMClassifier
 import warnings
 warnings.filterwarnings("ignore")
+```
 
-# %% [markdown]
-# ## 2. Loading and Initial Data Inspection
-# 
-# * We will load the dataset from the csv file.
-# * Perform initial checks to understand the data structure, columns, and data types.
-# * Look for missing values and get a summary of the data.
-# 
-# ---
+## 2. Loading and Initial Data Inspection
 
-# %%
+* We will load the dataset from the csv file.
+* Perform initial checks to understand the data structure, columns, and data types.
+* Look for missing values and get a summary of the data.
+
+---
+
+
+```python
 # CELL 2: Loading Dataset
 print("CELL 2 Running: Loading dataset...")
 df = pd.read_csv('post natal data.csv')
 print("Data shape:", df.shape)
+```
 
-# %% [markdown]
-# # 3. Target Variable Distribution and Missing Data Overview / EDA
-# 
-# In this step, we explore the class distribution of the target variable (`Feeling anxious`).  
-# This helps us understand whether the dataset is imbalanced, which is important for model evaluation.  
-# We also visualize the location of missing values in the dataset using a heatmap to identify which columns require imputation.
-# 
+    CELL 2 Running: Loading dataset...
+    Data shape: (1503, 11)
+    
 
-# %%
+# 3. Target Variable Distribution and Missing Data Overview / EDA
+
+In this step, we explore the class distribution of the target variable (`Feeling anxious`).  
+This helps us understand whether the dataset is imbalanced, which is important for model evaluation.  
+We also visualize the location of missing values in the dataset using a heatmap to identify which columns require imputation.
+
+
+
+```python
 print("Target variable distribution:")
 print(df['Feeling anxious'].value_counts())
 
@@ -76,29 +81,50 @@ sns.heatmap(df.isnull(), cbar=False, yticklabels=False)
 plt.title("Eksik Veriler")
 plt.show()
 
+```
 
-# %% [markdown]
-# ### 3.1 Feature-Target Relationship: Overeating vs Feeling Anxious
-# 
-# This plot shows how the presence of overeating or appetite loss relates to anxiety symptoms.
-# 
+    Target variable distribution:
+    Feeling anxious
+    Yes    980
+    No     523
+    Name: count, dtype: int64
+    
 
-# %%
+
+    
+![png](PPD_kodlar_files/PPD_kodlar_6_1.png)
+    
+
+
+### 3.1 Feature-Target Relationship: Overeating vs Feeling Anxious
+
+This plot shows how the presence of overeating or appetite loss relates to anxiety symptoms.
+
+
+
+```python
 sns.countplot(x='Overeating or loss of appetite', hue='Feeling anxious', data=df)
 plt.title("Anxiety Distribution by Overeating")
 plt.xlabel("Overeating or loss of appetite")
 plt.ylabel("Count")
 plt.show()
 
+```
 
-# %% [markdown]
-# ### 3.2 Missing Data Percentage Overview
-# 
-# In addition to the missing value heatmap, this step provides a precise percentage of missing values in each feature.  
-# Understanding the extent of missing data helps in choosing the right imputation strategy.
-# 
 
-# %%
+    
+![png](PPD_kodlar_files/PPD_kodlar_8_0.png)
+    
+
+
+### 3.2 Missing Data Percentage Overview
+
+In addition to the missing value heatmap, this step provides a precise percentage of missing values in each feature.  
+Understanding the extent of missing data helps in choosing the right imputation strategy.
+
+
+
+```python
 # CELL 3.2: Missing Data Percentage Summary
 
 # Calculate percentage of missing values in each column
@@ -118,16 +144,30 @@ plt.xticks(rotation=45)
 plt.tight_layout()
 plt.show()
 
+```
 
-# %% [markdown]
-# # 4. Initial Data Cleaning and Ambiguous Value Handling
-# 
-# Some responses in the dataset contain vague or non-standard answers such as "Maybe", "Often", or "Not interested to say".  
-# These values are not informative and may hinder the modeling process.  
-# To address this, we replace them with `NaN` values so they can be handled systematically in the imputation step that follows.
-# 
+    Missing Data (%):
+    Problems concentrating or making decision    0.798403
+    Feeling of guilt                             0.598802
+    Irritable towards baby & partner             0.399202
+    dtype: float64
+    
 
-# %%
+
+    
+![png](PPD_kodlar_files/PPD_kodlar_10_1.png)
+    
+
+
+# 4. Initial Data Cleaning and Ambiguous Value Handling
+
+Some responses in the dataset contain vague or non-standard answers such as "Maybe", "Often", or "Not interested to say".  
+These values are not informative and may hinder the modeling process.  
+To address this, we replace them with `NaN` values so they can be handled systematically in the imputation step that follows.
+
+
+
+```python
 # CELL 3: Initial Inspection & Preprocessing
 # Belirsiz kategorileri NaN ile değiştiriyoruz
 df.replace({
@@ -138,17 +178,21 @@ df.replace({
 
 print("CELL 3 Running: Preprocessing...")
 
+```
 
-# %% [markdown]
-# ### 4.1 Encoding Strategy
-# 
-# To prepare the data for machine learning algorithms, we apply:
-# - Ordinal encoding for age ranges.
-# - Label encoding for binary and ordinal features.
-# - One-hot encoding for nominal features that are non-ordinal and have multiple categories.
-# 
+    CELL 3 Running: Preprocessing...
+    
 
-# %%
+### 4.1 Encoding Strategy
+
+To prepare the data for machine learning algorithms, we apply:
+- Ordinal encoding for age ranges.
+- Label encoding for binary and ordinal features.
+- One-hot encoding for nominal features that are non-ordinal and have multiple categories.
+
+
+
+```python
 # CELL 4: Handling Missing Values and Encoding
 print("CELL 4 Running: Handling Missing Values and Encoding...")
 # Belirsiz cevaplardan kaynaklı eksik değerleri en sık görülenle doldur
@@ -177,20 +221,24 @@ X_encoded = pd.get_dummies(X, drop_first=True)
 
 le_target = LabelEncoder()
 y_encoded = le_target.fit_transform(y)
+```
 
-# %% [markdown]
-# ### 6. Correlation Matrix Between Selected Features and Target Variable
-# 
-# In this step, we calculate and visualize the **correlation matrix** between selected features and the target variable (`Feeling anxious`):
-# 
-# - The target column is temporarily added back to the feature set.
-# - Categorical variables are converted to numerical format using `pd.factorize()`, ensuring compatibility with correlation calculations.
-# - A heatmap is generated to show the linear correlation between all variables.
-# 
-# > This helps identify potential multicollinearity between features and shows how strongly each variable is related to the target.
-# 
+    CELL 4 Running: Handling Missing Values and Encoding...
+    
 
-# %%
+### 6. Correlation Matrix Between Selected Features and Target Variable
+
+In this step, we calculate and visualize the **correlation matrix** between selected features and the target variable (`Feeling anxious`):
+
+- The target column is temporarily added back to the feature set.
+- Categorical variables are converted to numerical format using `pd.factorize()`, ensuring compatibility with correlation calculations.
+- A heatmap is generated to show the linear correlation between all variables.
+
+> This helps identify potential multicollinearity between features and shows how strongly each variable is related to the target.
+
+
+
+```python
 # Seçilen feature ve hedef sütunları birleştir
 corr_df = X.copy()
 corr_df['Feeling anxious'] = y
@@ -204,14 +252,21 @@ sns.heatmap(corr_df_encoded.corr(), annot=True, cmap='coolwarm', fmt=".2f")
 plt.title("Seçilen Özellikler ve Hedef için Korelasyon Matrisi")
 plt.tight_layout()
 plt.show()
+```
 
-# %% [markdown]
-# ### 7. Train-Test Split and Preprocessing
-# 
-# The dataset is split into training and testing sets with stratification to preserve class balance.  
-# Then, StandardScaler is applied using a ColumnTransformer to normalize the features before training.
 
-# %%
+    
+![png](PPD_kodlar_files/PPD_kodlar_16_0.png)
+    
+
+
+### 7. Train-Test Split and Preprocessing
+
+The dataset is split into training and testing sets with stratification to preserve class balance.  
+Then, StandardScaler is applied using a ColumnTransformer to normalize the features before training.
+
+
+```python
 # CELL 4.5: Train/Test Split & Preprocessor (Son Hali)
 from sklearn.preprocessing import StandardScaler
 from sklearn.compose import ColumnTransformer
@@ -226,19 +281,23 @@ preprocessor = ColumnTransformer(
 X_train, X_test, y_train, y_test = train_test_split(X_encoded, y_encoded, test_size=0.2, random_state=42, stratify=y_encoded)
 
 print("CELL 4.5 Running: Preprocessor created. Train/test split is handled by K-Fold Cross-Validation.")
+```
 
-# %% [markdown]
-# ### 8. Final Data Type Check and Boolean Conversion
-# 
-# Before model training, we ensure that all features are in a compatible numeric format.
-# 
-# - Boolean values, if any, are explicitly converted to integers (`True` → 1, `False` → 0).
-# - A data type check is performed on the training dataset to verify that all features are numeric.
-# 
-# > This is a safety step to avoid type-related issues during model training or pipeline transformations.
-# 
+    CELL 4.5 Running: Preprocessor created. Train/test split is handled by K-Fold Cross-Validation.
+    
 
-# %%
+### 8. Final Data Type Check and Boolean Conversion
+
+Before model training, we ensure that all features are in a compatible numeric format.
+
+- Boolean values, if any, are explicitly converted to integers (`True` → 1, `False` → 0).
+- A data type check is performed on the training dataset to verify that all features are numeric.
+
+> This is a safety step to avoid type-related issues during model training or pipeline transformations.
+
+
+
+```python
 from sklearn.preprocessing import FunctionTransformer
 
 # Boolean varsa int'e çevir
@@ -247,25 +306,30 @@ X_train = X_train.applymap(lambda x: int(x) if isinstance(x, (bool, np.bool_)) e
 # Son kontroller
 print(X_train.dtypes.value_counts())
 
+```
 
-# %% [markdown]
-# ### 9. Training and Evaluating Models Without SMOTE
-# 
-# In this step, we train all models on the original dataset **without applying any resampling** technique like SMOTE.  
-# This provides a baseline to compare with the SMOTE-enhanced results later.
-# 
-# Key points:
-# - A new train-test split is performed on the original encoded dataset.
-# - A consistent pipeline is used for each model, including preprocessing.
-# - The following metrics are calculated:
-#   - Accuracy
-#   - F1 Score
-#   - ROC AUC
-# 
-# > This baseline evaluation helps quantify the impact of data imbalance on model performance.
-# 
+    int64    7
+    Name: count, dtype: int64
+    
 
-# %%
+### 9. Training and Evaluating Models Without SMOTE
+
+In this step, we train all models on the original dataset **without applying any resampling** technique like SMOTE.  
+This provides a baseline to compare with the SMOTE-enhanced results later.
+
+Key points:
+- A new train-test split is performed on the original encoded dataset.
+- A consistent pipeline is used for each model, including preprocessing.
+- The following metrics are calculated:
+  - Accuracy
+  - F1 Score
+  - ROC AUC
+
+> This baseline evaluation helps quantify the impact of data imbalance on model performance.
+
+
+
+```python
 # CELL 11: Train and Evaluate Models WITHOUT SMOTE
 models = {
     "Logistic Regression": LogisticRegression(max_iter=1000, solver='liblinear'),
@@ -314,20 +378,24 @@ for name, model in models.items():
         "ROC AUC": roc_auc_score(y_test_no, y_proba)
     }
 
+```
 
-# %% [markdown]
-# ### 9.1. ROC Curve Comparison (Without SMOTE)
-# 
-# This additional plot illustrates how models perform **without any class balancing**.  
-# Since the training data is imbalanced, many models may struggle to correctly identify the minority class.
-# 
-# - AUC scores are generally lower compared to SMOTE-enhanced training.
-# - This serves as a **baseline** to demonstrate the impact of class imbalance.
-# 
-# > Conclusion: Balancing the training data significantly improves model discrimination ability.
-# 
+    CELL 11 Running: Training models without SMOTE...
+    
 
-# %%
+### 9.1. ROC Curve Comparison (Without SMOTE)
+
+This additional plot illustrates how models perform **without any class balancing**.  
+Since the training data is imbalanced, many models may struggle to correctly identify the minority class.
+
+- AUC scores are generally lower compared to SMOTE-enhanced training.
+- This serves as a **baseline** to demonstrate the impact of class imbalance.
+
+> Conclusion: Balancing the training data significantly improves model discrimination ability.
+
+
+
+```python
 # CELL 9.5: ROC Curves Without SMOTE
 
 from sklearn.metrics import roc_curve, auc
@@ -378,17 +446,24 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+```
 
-# %% [markdown]
-# ### 10. Class Distribution Before SMOTE
-# 
-# This bar chart visualizes the distribution of the target variable (`Feeling anxious`) before applying SMOTE.  
-# It highlights the **class imbalance** problem, which can negatively affect model performance by biasing predictions toward the majority class.
-# 
-# > This imbalance is the main reason why SMOTE will be applied later to balance the training data.
-# 
 
-# %%
+    
+![png](PPD_kodlar_files/PPD_kodlar_24_0.png)
+    
+
+
+### 10. Class Distribution Before SMOTE
+
+This bar chart visualizes the distribution of the target variable (`Feeling anxious`) before applying SMOTE.  
+It highlights the **class imbalance** problem, which can negatively affect model performance by biasing predictions toward the majority class.
+
+> This imbalance is the main reason why SMOTE will be applied later to balance the training data.
+
+
+
+```python
 # SMOTE öncesi sınıf dağılımı
 df["Feeling anxious"].value_counts().plot(kind='bar', color=['skyblue', 'salmon'])
 plt.title("SMOTE Öncesi 'Feeling anxious' Sınıf Dağılımı")
@@ -396,41 +471,55 @@ plt.ylabel("Gözlem Sayısı")
 plt.xlabel("Sınıf")
 plt.grid(True)
 plt.show()
+```
 
-# %% [markdown]
-# ### 11. Confusion Matrix Visualization
-# 
-# The confusion matrix provides a detailed view of classification results:
-# 
-# - **True Positives (TP):** Correctly predicted positive cases  
-# - **True Negatives (TN):** Correctly predicted negative cases  
-# - **False Positives (FP):** Incorrectly predicted as positive  
-# - **False Negatives (FN):** Incorrectly predicted as negative
-# 
-# > This visualization helps interpret the model’s strengths and weaknesses in classification, especially for imbalanced datasets.
-# 
 
-# %%
+    
+![png](PPD_kodlar_files/PPD_kodlar_26_0.png)
+    
+
+
+### 11. Confusion Matrix Visualization
+
+The confusion matrix provides a detailed view of classification results:
+
+- **True Positives (TP):** Correctly predicted positive cases  
+- **True Negatives (TN):** Correctly predicted negative cases  
+- **False Positives (FP):** Incorrectly predicted as positive  
+- **False Negatives (FN):** Incorrectly predicted as negative
+
+> This visualization helps interpret the model’s strengths and weaknesses in classification, especially for imbalanced datasets.
+
+
+
+```python
 from sklearn.metrics import ConfusionMatrixDisplay
 ConfusionMatrixDisplay.from_predictions(y_test, y_pred, display_labels=["No", "Yes"], cmap="Blues")
 plt.title("Confusion Matrix")
 plt.grid(False)
 plt.show()
 
+```
 
-# %% [markdown]
-# ### 12. Balancing the Dataset with SMOTE
-# 
-# In this step, we apply **SMOTE (Synthetic Minority Over-sampling Technique)** to the training data only.
-# 
-# - SMOTE creates synthetic samples of the minority class by interpolating between existing observations.
-# - This helps reduce bias in the classifier toward the majority class.
-# - The new class distribution is printed after resampling.
-# 
-# > ⚠️ Note: SMOTE is applied only to the training data to avoid data leakage during validation or testing.
-# 
 
-# %%
+    
+![png](PPD_kodlar_files/PPD_kodlar_28_0.png)
+    
+
+
+### 12. Balancing the Dataset with SMOTE
+
+In this step, we apply **SMOTE (Synthetic Minority Over-sampling Technique)** to the training data only.
+
+- SMOTE creates synthetic samples of the minority class by interpolating between existing observations.
+- This helps reduce bias in the classifier toward the majority class.
+- The new class distribution is printed after resampling.
+
+> ⚠️ Note: SMOTE is applied only to the training data to avoid data leakage during validation or testing.
+
+
+
+```python
 # CELL 5: Balancing the Dataset with SMOTE
 print("CELL 5 Running: Applying SMOTE to training data only...")
 
@@ -441,28 +530,36 @@ X_train, y_train = smote.fit_resample(X_train, y_train)
 print("After SMOTE - Class distribution:")
 print(pd.Series(y_train).value_counts())
 
+```
 
-# %% [markdown]
-# ### 13. Defining Classification Models
-# 
-# In this step, we define a dictionary of classifiers that will be used in model evaluation.  
-# The models include a mix of simple, ensemble, and boosting-based algorithms:
-# 
-# - **Logistic Regression** — A linear baseline classifier.  
-# - **Decision Tree** — A non-linear tree-based model.  
-# - **Random Forest** — An ensemble method using bagging.  
-# - **LightGBM** — A fast and efficient gradient boosting method.  
-# - **CatBoost** — A boosting algorithm particularly effective with categorical data.  
-# - **StackingClassifier** — A meta-model that combines multiple classifiers for improved performance.
-# 
-# We also initialize:
-# - `roc_curves_data`: stores false positive/true positive values for ROC plots.  
-# - `model_predictions`: stores test labels and predicted probabilities for Precision-Recall analysis.
-# 
-# > These models will later be evaluated using stratified cross-validation.
-# 
+    CELL 5 Running: Applying SMOTE to training data only...
+    After SMOTE - Class distribution:
+    0    784
+    1    784
+    Name: count, dtype: int64
+    
 
-# %%
+### 13. Defining Classification Models
+
+In this step, we define a dictionary of classifiers that will be used in model evaluation.  
+The models include a mix of simple, ensemble, and boosting-based algorithms:
+
+- **Logistic Regression** — A linear baseline classifier.  
+- **Decision Tree** — A non-linear tree-based model.  
+- **Random Forest** — An ensemble method using bagging.  
+- **LightGBM** — A fast and efficient gradient boosting method.  
+- **CatBoost** — A boosting algorithm particularly effective with categorical data.  
+- **StackingClassifier** — A meta-model that combines multiple classifiers for improved performance.
+
+We also initialize:
+- `roc_curves_data`: stores false positive/true positive values for ROC plots.  
+- `model_predictions`: stores test labels and predicted probabilities for Precision-Recall analysis.
+
+> These models will later be evaluated using stratified cross-validation.
+
+
+
+```python
 # CELL 6: Define Models
 print("CELL 6 Running: Defining models...")
 import numpy as np # Bu satırı da eklemek iyi bir pratik, bazı modellerin iç parametreleri için gerekebilir.
@@ -493,28 +590,32 @@ models = {
 results = {} # Bu artık kullanılmıyor, yerine cv_results kullanılacak.
 roc_curves_data = {} # ROC eğrisi verileri (K-Fold ile birleştirilmiş)
 model_predictions = {} # ADDED: K-Fold tahminlerini depolamak için sözlük (y_test ve y_proba)
+```
 
-# %% [markdown]
-# ### 14. Training and Evaluating Models with SMOTE and Stratified K-Fold Cross-Validation
-# 
-# This step performs model training and evaluation using **Stratified K-Fold Cross-Validation (5 folds)** on a dataset that is balanced using **SMOTE**.
-# 
-# Key details:
-# - Each fold maintains class distribution (`StratifiedKFold`).
-# - **SMOTE is applied only to the training fold**, ensuring no data leakage.
-# - A pipeline is used for each model (except CatBoost), which includes preprocessing and classification.
-# - The following evaluation metrics are calculated per fold and then averaged:
-#   - Accuracy
-#   - Precision
-#   - Recall
-#   - F1 Score
-#   - ROC AUC
-# - ROC and Precision-Recall data are also stored for each model for visualization.
-# 
-# > This approach ensures a fair and robust evaluation of each model on balanced data.
-# 
+    CELL 6 Running: Defining models...
+    
 
-# %%
+### 14. Training and Evaluating Models with SMOTE and Stratified K-Fold Cross-Validation
+
+This step performs model training and evaluation using **Stratified K-Fold Cross-Validation (5 folds)** on a dataset that is balanced using **SMOTE**.
+
+Key details:
+- Each fold maintains class distribution (`StratifiedKFold`).
+- **SMOTE is applied only to the training fold**, ensuring no data leakage.
+- A pipeline is used for each model (except CatBoost), which includes preprocessing and classification.
+- The following evaluation metrics are calculated per fold and then averaged:
+  - Accuracy
+  - Precision
+  - Recall
+  - F1 Score
+  - ROC AUC
+- ROC and Precision-Recall data are also stored for each model for visualization.
+
+> This approach ensures a fair and robust evaluation of each model on balanced data.
+
+
+
+```python
 # CELL 7: Train and Evaluate Models (K-Fold Cross-Validation ile Son Hali)
 print("CELL 7 Running: Training and evaluating models with K-Fold Cross-Validation...")
 
@@ -616,20 +717,68 @@ for name, model in models.items():
     }
 
 print("\nAll models evaluated with K-Fold Cross-Validation.")
+```
 
-# %% [markdown]
-# ### 15. Displaying Cross-Validation Results (After SMOTE)
-# 
-# This step displays the evaluation results obtained from cross-validation after applying SMOTE.
-# 
-# - The `cv_results` dictionary is converted into a DataFrame.
-# - Each model is represented as a row, and the evaluation metrics (mean and standard deviation) as columns.
-# - The results are rounded to 3 decimal places for better readability.
-# 
-# > This comparative table allows for quick assessment of model performance across multiple metrics.
-# 
+    CELL 7 Running: Training and evaluating models with K-Fold Cross-Validation...
+    
+    Evaluating Logistic Regression with 5-Fold Cross-Validation...
+      Fold 1/5...
+      Fold 2/5...
+      Fold 3/5...
+      Fold 4/5...
+      Fold 5/5...
+    
+    Evaluating Random Forest with 5-Fold Cross-Validation...
+      Fold 1/5...
+      Fold 2/5...
+      Fold 3/5...
+      Fold 4/5...
+      Fold 5/5...
+    
+    Evaluating Decision Tree with 5-Fold Cross-Validation...
+      Fold 1/5...
+      Fold 2/5...
+      Fold 3/5...
+      Fold 4/5...
+      Fold 5/5...
+    
+    Evaluating LightGBM with 5-Fold Cross-Validation...
+      Fold 1/5...
+      Fold 2/5...
+      Fold 3/5...
+      Fold 4/5...
+      Fold 5/5...
+    
+    Evaluating StackingClassifier with 5-Fold Cross-Validation...
+      Fold 1/5...
+      Fold 2/5...
+      Fold 3/5...
+      Fold 4/5...
+      Fold 5/5...
+    
+    Evaluating CatBoost (manual) with 5-Fold Cross-Validation...
+      Fold 1/5...
+      Fold 2/5...
+      Fold 3/5...
+      Fold 4/5...
+      Fold 5/5...
+    
+    All models evaluated with K-Fold Cross-Validation.
+    
 
-# %%
+### 15. Displaying Cross-Validation Results (After SMOTE)
+
+This step displays the evaluation results obtained from cross-validation after applying SMOTE.
+
+- The `cv_results` dictionary is converted into a DataFrame.
+- Each model is represented as a row, and the evaluation metrics (mean and standard deviation) as columns.
+- The results are rounded to 3 decimal places for better readability.
+
+> This comparative table allows for quick assessment of model performance across multiple metrics.
+
+
+
+```python
 # CELL 8: Display Results (Son Hali)
 print("CELL 8 Running: Displaying Cross-Validation Results...")
 import pandas as pd
@@ -641,25 +790,52 @@ results_df = pd.DataFrame(cv_results).T
 results_df = results_df.round(3) # Sonuçları 3 ondalık basamağa yuvarla
 
 print(results_df)
+```
 
-# %% [markdown]
-# ### 16. Plotting ROC and Precision-Recall Curves
-# 
-# This step visualizes model performance using two key evaluation curves:
-# 
-# ####  Left: ROC Curve (Receiver Operating Characteristic)
-# - Shows the trade-off between **True Positive Rate** and **False Positive Rate**.
-# - AUC (Area Under Curve) indicates classifier performance (closer to 1.0 is better).
-# 
-# ####  Right: Precision-Recall Curve
-# - Focuses on performance under **class imbalance**.
-# - Shows the trade-off between **precision** (positive predictive value) and **recall** (sensitivity).
-# - Baseline reflects the proportion of the positive class in the dataset.
-# 
-# > These visualizations provide an intuitive understanding of model effectiveness across all thresholds.
-# 
+    CELL 8 Running: Displaying Cross-Validation Results...
+                         Accuracy_Mean  Accuracy_Std  Precision_Mean  \
+    Logistic Regression          0.701         0.035           0.806   
+    Random Forest                0.776         0.022           0.859   
+    Decision Tree                0.773         0.022           0.862   
+    LightGBM                     0.770         0.022           0.859   
+    StackingClassifier           0.776         0.022           0.854   
+    CatBoost (manual)            0.778         0.025           0.857   
+    
+                         Precision_Std  Recall_Mean  Recall_Std  F1_Score_Mean  \
+    Logistic Regression          0.034        0.712       0.027          0.756   
+    Random Forest                0.018        0.785       0.023          0.820   
+    Decision Tree                0.019        0.777       0.025          0.817   
+    LightGBM                     0.018        0.776       0.026          0.815   
+    StackingClassifier           0.015        0.791       0.029          0.821   
+    CatBoost (manual)            0.016        0.792       0.031          0.823   
+    
+                         F1_Score_Std  ROC_AUC_Mean  ROC_AUC_Std  
+    Logistic Regression         0.028         0.754        0.042  
+    Random Forest               0.019         0.811        0.028  
+    Decision Tree               0.019         0.813        0.027  
+    LightGBM                    0.019         0.818        0.030  
+    StackingClassifier          0.020         0.810        0.031  
+    CatBoost (manual)           0.022         0.813        0.032  
+    
 
-# %%
+### 16. Plotting ROC and Precision-Recall Curves
+
+This step visualizes model performance using two key evaluation curves:
+
+####  Left: ROC Curve (Receiver Operating Characteristic)
+- Shows the trade-off between **True Positive Rate** and **False Positive Rate**.
+- AUC (Area Under Curve) indicates classifier performance (closer to 1.0 is better).
+
+####  Right: Precision-Recall Curve
+- Focuses on performance under **class imbalance**.
+- Shows the trade-off between **precision** (positive predictive value) and **recall** (sensitivity).
+- Baseline reflects the proportion of the positive class in the dataset.
+
+> These visualizations provide an intuitive understanding of model effectiveness across all thresholds.
+
+
+
+```python
 # CELL 9: Plotting ROC and Precision-Recall Curves
 print("\nCELL 9 Running: Plotting ROC and Precision-Recall Curves...")
 
@@ -712,20 +888,34 @@ plt.tight_layout() # Adjust subplot parameters for a tight layout, preventing la
 plt.show() # Display the plots
 
 print("Finished plotting ROC and Precision-Recall Curves.")
+```
 
-# %% [markdown]
-# ### 17. Feature Importance (Random Forest)
-# 
-# In this step, we visualize the **feature importance scores** derived from a trained Random Forest classifier.
-# 
-# - The model is trained on the SMOTE-balanced training data (`X_train`, `y_train`).
-# - Feature importances reflect how much each feature contributes to the model's decision-making process.
-# - A horizontal bar plot is used for better readability.
-# 
-# > This visualization helps interpret which features are most influential in predicting the target variable.
-# 
+    
+    CELL 9 Running: Plotting ROC and Precision-Recall Curves...
+    
 
-# %%
+
+    
+![png](PPD_kodlar_files/PPD_kodlar_38_1.png)
+    
+
+
+    Finished plotting ROC and Precision-Recall Curves.
+    
+
+### 17. Feature Importance (Random Forest)
+
+In this step, we visualize the **feature importance scores** derived from a trained Random Forest classifier.
+
+- The model is trained on the SMOTE-balanced training data (`X_train`, `y_train`).
+- Feature importances reflect how much each feature contributes to the model's decision-making process.
+- A horizontal bar plot is used for better readability.
+
+> This visualization helps interpret which features are most influential in predicting the target variable.
+
+
+
+```python
 # CELL 10: Feature Importance Example (Optional)
 print("\nCELL 10 Running: Feature Importance for Random Forest...")
 
@@ -753,38 +943,48 @@ plt.grid(True)
 plt.tight_layout()
 plt.show()
 
+```
 
-# %% [markdown]
-# ### Interpretation of Key Features
-# 
-# The most influential features were:
-# 
-# - **Irritable towards baby & partner**: A sign of emotional tension and early mental strain.
-# - **Feeling sad or tearful**: A classic symptom linked to both anxiety and depression.
-# - **Feeling of guilt**: Reflects self-blame and emotional burden common in PPD.
-# 
-# These features align with known clinical indicators of postpartum mental distress.
-# 
+    
+    CELL 10 Running: Feature Importance for Random Forest...
+    
 
-# %% [markdown]
-# ### 18. Comparison of Model Performance With and Without SMOTE
-# 
-# This step compares the evaluation metrics of all models trained:
-# 
-# - **With SMOTE** (balanced data via oversampling)
-# - **Without SMOTE** (original imbalanced data)
-# 
-# Metrics included in the comparison:
-# - Accuracy  
-# - F1 Score  
-# - ROC AUC  
-# 
-# Each metric is visualized in a grouped bar chart, with one bar for the "No SMOTE" model and one for the "SMOTE" model.
-# 
-# > This visual comparison highlights the effect of class balancing on model performance.
-# 
 
-# %%
+    
+![png](PPD_kodlar_files/PPD_kodlar_40_1.png)
+    
+
+
+### Interpretation of Key Features
+
+The most influential features were:
+
+- **Irritable towards baby & partner**: A sign of emotional tension and early mental strain.
+- **Feeling sad or tearful**: A classic symptom linked to both anxiety and depression.
+- **Feeling of guilt**: Reflects self-blame and emotional burden common in PPD.
+
+These features align with known clinical indicators of postpartum mental distress.
+
+
+### 18. Comparison of Model Performance With and Without SMOTE
+
+This step compares the evaluation metrics of all models trained:
+
+- **With SMOTE** (balanced data via oversampling)
+- **Without SMOTE** (original imbalanced data)
+
+Metrics included in the comparison:
+- Accuracy  
+- F1 Score  
+- ROC AUC  
+
+Each metric is visualized in a grouped bar chart, with one bar for the "No SMOTE" model and one for the "SMOTE" model.
+
+> This visual comparison highlights the effect of class balancing on model performance.
+
+
+
+```python
 metrics = ["Accuracy", "F1 Score", "ROC AUC"]  # results_nosmote_df için
 models = results_df.index
 
@@ -818,14 +1018,21 @@ for i, metric in enumerate(metrics):
 plt.suptitle("SMOTE'lu ve SMOTE'suz Modellerin Karşılaştırmalı Performansı")
 plt.tight_layout(rect=[0, 0, 1, 0.95])
 plt.show()
+```
 
-# %% [markdown]
-# ### 18.1 Confusion Matrix Comparison
-# 
-# This set of confusion matrices compares how different models perform on the test set after SMOTE.
-# 
 
-# %%
+    
+![png](PPD_kodlar_files/PPD_kodlar_43_0.png)
+    
+
+
+### 18.1 Confusion Matrix Comparison
+
+This set of confusion matrices compares how different models perform on the test set after SMOTE.
+
+
+
+```python
 # Re-create correct models dictionary (if it was overwritten)
 models = {
     "Logistic Regression": LogisticRegression(max_iter=1000, solver='liblinear'),
@@ -833,8 +1040,10 @@ models = {
     "LightGBM": LGBMClassifier(random_state=42, verbosity=-1)
 }
 
+```
 
-# %%
+
+```python
 fig, axes = plt.subplots(1, 3, figsize=(16, 4))
 model_names = ["Random Forest", "Logistic Regression", "LightGBM"]
 
@@ -845,63 +1054,66 @@ for i, name in enumerate(model_names):
     ConfusionMatrixDisplay.from_estimator(pipe, X_test, y_test, ax=axes[i], cmap='Blues')
     axes[i].set_title(name)
 
+```
 
-# %% [markdown]
-# ### 🔍 Interpretation of SMOTE vs Non-SMOTE Comparison
-# 
-# Based on the bar charts:
-# 
-# - **Accuracy:**
-#   - The difference between SMOTE and non-SMOTE versions is moderate for most models.
-#   - In some models like **Logistic Regression**, accuracy improved slightly with SMOTE.
-#   - However, since accuracy can be misleading on imbalanced data, this alone isn't conclusive.
-# 
-# - **F1 Score:**
-#   - This metric showed **the most noticeable improvement** when SMOTE was applied, especially in models like **Decision Tree** and **Random Forest**.
-#   - F1 Score balances both precision and recall, making it a reliable metric for imbalanced classification problems.
-# 
-# - **ROC AUC:**
-#   - SMOTE also led to higher AUC scores across nearly all models.
-#   - This indicates better ability to distinguish between the two classes after balancing.
-# 
-# ###  Summary:
-# - **SMOTE generally improved performance across all models**, especially in terms of **F1 Score** and **ROC AUC**.
-# - The models that benefited the most from SMOTE are:
-#   -  **Decision Tree**
-#   -  **Random Forest**
-#   -  **StackingClassifier**
-# 
-# > In conclusion, applying SMOTE helped mitigate the bias toward the majority class and improved the model’s ability to correctly identify both classes.
-# 
 
-# %% [markdown]
-# ### 19. Final Remarks
-# 
-# This notebook presented a complete machine learning pipeline for predicting the risk of **postpartum depression**, using **"Feeling anxious"** as a binary target variable.
-# 
-# #### Objective
-# 
-# To classify individuals experiencing anxiety symptoms—an early signal of postpartum mental distress—based on behavioral and emotional survey responses.
-# 
-# #### Summary of Approach
-# 
-# - **Data Preprocessing**
-#   - Handled missing values using the most frequent strategy.
-#   - Encoded categorical features using one-hot encoding.
-#   - Selected features based on psychological relevance.
-# 
-# - **Model Development**
-#   - Trained multiple classification algorithms: Logistic Regression, Decision Tree, Random Forest, LightGBM, CatBoost, and Stacking.
-#   - Applied **Stratified K-Fold Cross-Validation** to ensure robust evaluation.
-#   - Compared performance based on **Accuracy**, **F1 Score**, and **ROC AUC**.
-# 
-# - **Handling Class Imbalance**
-#   - Used **SMOTE** to balance training data, allowing models to better learn from minority class instances without introducing data leakage.
-# 
-# - **Evaluation and Visualization**
-#   - Visualized model performance using ROC and Precision-Recall curves.
-#   - Compared results with and without SMOTE.
-#   - Analyzed feature importance for interpretability.
-# 
+    
+![png](PPD_kodlar_files/PPD_kodlar_46_0.png)
+    
 
+
+### 🔍 Interpretation of SMOTE vs Non-SMOTE Comparison
+
+Based on the bar charts:
+
+- **Accuracy:**
+  - The difference between SMOTE and non-SMOTE versions is moderate for most models.
+  - In some models like **Logistic Regression**, accuracy improved slightly with SMOTE.
+  - However, since accuracy can be misleading on imbalanced data, this alone isn't conclusive.
+
+- **F1 Score:**
+  - This metric showed **the most noticeable improvement** when SMOTE was applied, especially in models like **Decision Tree** and **Random Forest**.
+  - F1 Score balances both precision and recall, making it a reliable metric for imbalanced classification problems.
+
+- **ROC AUC:**
+  - SMOTE also led to higher AUC scores across nearly all models.
+  - This indicates better ability to distinguish between the two classes after balancing.
+
+###  Summary:
+- **SMOTE generally improved performance across all models**, especially in terms of **F1 Score** and **ROC AUC**.
+- The models that benefited the most from SMOTE are:
+  -  **Decision Tree**
+  -  **Random Forest**
+  -  **StackingClassifier**
+
+> In conclusion, applying SMOTE helped mitigate the bias toward the majority class and improved the model’s ability to correctly identify both classes.
+
+
+### 19. Final Remarks
+
+This notebook presented a complete machine learning pipeline for predicting the risk of **postpartum depression**, using **"Feeling anxious"** as a binary target variable.
+
+#### Objective
+
+To classify individuals experiencing anxiety symptoms—an early signal of postpartum mental distress—based on behavioral and emotional survey responses.
+
+#### Summary of Approach
+
+- **Data Preprocessing**
+  - Handled missing values using the most frequent strategy.
+  - Encoded categorical features using one-hot encoding.
+  - Selected features based on psychological relevance.
+
+- **Model Development**
+  - Trained multiple classification algorithms: Logistic Regression, Decision Tree, Random Forest, LightGBM, CatBoost, and Stacking.
+  - Applied **Stratified K-Fold Cross-Validation** to ensure robust evaluation.
+  - Compared performance based on **Accuracy**, **F1 Score**, and **ROC AUC**.
+
+- **Handling Class Imbalance**
+  - Used **SMOTE** to balance training data, allowing models to better learn from minority class instances without introducing data leakage.
+
+- **Evaluation and Visualization**
+  - Visualized model performance using ROC and Precision-Recall curves.
+  - Compared results with and without SMOTE.
+  - Analyzed feature importance for interpretability.
 
